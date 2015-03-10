@@ -1,0 +1,102 @@
+package iCalendar;
+import java.io.*;
+import java.util.*;
+import java.util.TimeZone;
+
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.Priority;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.model.property.Clazz;
+import net.fortuna.ical4j.model.property.Uid;
+import net.fortuna.ical4j.util.UidGenerator;
+
+public class JackFruitCalendar {
+	
+	public static void main(String[] args) throws IOException, ValidationException {
+		createEntry();
+	}
+	
+	public static File createEntry() {
+
+		//Create file 
+		File calFile = new File("jackfruitcal.ics");
+		
+		try {
+		//Create timezone
+		TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+		TimeZone timezone = registry.getTimeZone("US/Hawaii");
+		VTimeZone tz = ((net.fortuna.ical4j.model.TimeZone) timezone).getVTimeZone();
+		
+			
+		//Setting Start Date
+		java.util.Calendar startDate = new GregorianCalendar();
+		startDate.setTimeZone(timezone);
+		startDate.set(java.util.Calendar.MONTH, java.util.Calendar.MAY);
+		startDate.set(java.util.Calendar.DAY_OF_MONTH, 8);
+		startDate.set(java.util.Calendar.YEAR, 2015);
+		startDate.set(java.util.Calendar.HOUR, 6);
+		startDate.set(java.util.Calendar.MINUTE, 0);
+		startDate.set(java.util.Calendar.SECOND, 0);
+
+		//Setting End Date
+		java.util.Calendar endDate = new GregorianCalendar();
+		endDate.setTimeZone(timezone);
+		endDate.set(java.util.Calendar.MONTH, java.util.Calendar.MAY);
+		endDate.set(java.util.Calendar.DAY_OF_MONTH, 8);
+		endDate.set(java.util.Calendar.YEAR, 2015);
+		endDate.set(java.util.Calendar.HOUR, 10);
+		endDate.set(java.util.Calendar.MINUTE, 0);
+		endDate.set(java.util.Calendar.SECOND, 0);
+
+		
+		//Create Event
+		String eventName = "Studying for Finals";
+		DateTime start = new DateTime(startDate.getTime());
+		DateTime end = new DateTime(endDate.getTime());
+		VEvent studying = new VEvent(start, end, eventName);
+		
+		//Add timezone 
+		studying.getProperties().add(tz.getTimeZoneId());
+		
+		//Add location
+		String location = "Hamilton Library";
+		studying.getProperties().add(new Location(location));
+		
+		//Add priority level
+		int priority = 1;
+		studying.getProperties().add(new Priority(priority));
+		
+		//Add public or private
+		String classification = "Public";
+		studying.getProperties().add(new Clazz(classification));
+		
+		//Create a calendar
+		net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
+		icsCalendar.getProperties().add(new Version(null, "2.0", null));
+		icsCalendar.getProperties().add(new ProdId("ICS314//Team JackFruit Calendar//EN"));
+		icsCalendar.getProperties().add(CalScale.GREGORIAN);
+	
+		//Add event to the calendar
+		icsCalendar.getComponents().add(studying);
+		System.out.println(icsCalendar);
+		
+		//Generate calendar file
+		CalendarOutputter outputter = new CalendarOutputter();
+		outputter.setValidating(false);
+		FileOutputStream fout = new FileOutputStream(calFile);
+		outputter.output(icsCalendar, fout);
+
+		return calFile;
+		}
+		catch (Exception e) {
+			System.err.println("Error in method createEntry()" + e);
+			return null;
+		}
+	}
+}
