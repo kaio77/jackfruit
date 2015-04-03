@@ -1,9 +1,12 @@
 package iCalendar;
+
 import java.io.*;
 import java.util.*;
 import java.util.TimeZone;
 
+import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
@@ -11,16 +14,68 @@ import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.Version;
-import net.fortuna.ical4j.model.property.Clazz;
+import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.util.UidGenerator;
 
-public class JackFruitCalendar {
+public class JackFruitCalendar2 {
 	
-	public static void main(String[] args) throws IOException, ValidationException {
+	public static void main(String[] args) throws IOException, ValidationException, ParserException {
 		createEntry();
+//new method calling
+		JackFruitCalendar2 object=new JackFruitCalendar2();
+		String []filesName={"calender1","calender2"};
+		String []filePaths={"c:\\calender1.ics","c:\\calender2.ics"};
+		object.inputfiles_ouputfiles(filesName,filePaths);
+
 	}
+
+//new method
+
+	public static void inputfiles_ouputfiles(String []filesName,String [] filePaths) throws FileNotFoundException, IOException, ParserException{
+	net.fortuna.ical4j.model.Calendar calendar =new net.fortuna.ical4j.model.Calendar();
+	java.util.Date startDate=new java.util.Date();
+	java.util.Date Endate=new java.util.Date();
+	long diffInMillies;
+	for(int i=0 ;i<=filesName.length;i++){
+	FileInputStream fin = new FileInputStream(filesName[i]);
+  	CalendarBuilder builder = new CalendarBuilder();
+  	calendar = builder.build(fin);
+	for (Iterator it = calendar.getComponents().iterator(); it.hasNext();) {
+      	Component component = (Component) it.next();
+	if(component.getName().toString().equals("Studying for Finals")){
+      	for (Iterator j = calendar.getProperties().iterator(); j.hasNext();) {
+          Property property = (Property) j.next();
+		if(i==0){
+		String startDate1=property.getValue();
+			}	
+			else 
+		if(i==1){
+		String Enddate=property.getValue();
+			}
+      			}
+			}
+  			}
+			}
+
+//put diffrence in output ics file
+
+		 diffInMillies= startDate.getTime() - Endate.getTime();
+		try{
+		File file = new File("C:\\Intel", "output.ics"); 
+		FileWriter writer = new FileWriter(file);
+		writer.append("Free Time");
+ 		writer.append(',');
+		writer.flush();
+		writer.close();
+
+}
+catch(Exception e){
+
+}
+
+}
+//end method
 	
 	public static File createEntry() {
 
@@ -40,7 +95,7 @@ public class JackFruitCalendar {
 		startDate.set(java.util.Calendar.MONTH, java.util.Calendar.MAY);
 		startDate.set(java.util.Calendar.DAY_OF_MONTH, 8);
 		startDate.set(java.util.Calendar.YEAR, 2015);
-		startDate.set(java.util.Calendar.HOUR, 6);
+		startDate.set(java.util.Calendar.HOUR, 18);
 		startDate.set(java.util.Calendar.MINUTE, 0);
 		startDate.set(java.util.Calendar.SECOND, 0);
 
@@ -50,7 +105,7 @@ public class JackFruitCalendar {
 		endDate.set(java.util.Calendar.MONTH, java.util.Calendar.MAY);
 		endDate.set(java.util.Calendar.DAY_OF_MONTH, 8);
 		endDate.set(java.util.Calendar.YEAR, 2015);
-		endDate.set(java.util.Calendar.HOUR, 10);
+		endDate.set(java.util.Calendar.HOUR, 22);
 		endDate.set(java.util.Calendar.MINUTE, 0);
 		endDate.set(java.util.Calendar.SECOND, 0);
 
@@ -69,19 +124,18 @@ public class JackFruitCalendar {
 		studying.getProperties().add(new Location(location));
 		
 		//Add priority level
-		int priority = 1;
-		studying.getProperties().add(new Priority(priority));
+		String priority = "High Priority";
+		studying.getProperties().add(new Summary(priority));
 		
 		//Add public or private
-		String classification = "Public";
-		studying.getProperties().add(new Clazz(classification));
+		String summary = "Public";
+		studying.getProperties().add(new Summary(summary));
 		
 		//Create a calendar
 		net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
-		icsCalendar.getProperties().add(new Version(null, "2.0", null));
-		icsCalendar.getProperties().add(new ProdId("ICS314//Team JackFruit Calendar//EN"));
+		icsCalendar.getProperties().add(new ProdId("ICS314//Team JackFruit Calendar v2"));
 		icsCalendar.getProperties().add(CalScale.GREGORIAN);
-	
+		
 		//Add event to the calendar
 		icsCalendar.getComponents().add(studying);
 		System.out.println(icsCalendar);
@@ -99,4 +153,15 @@ public class JackFruitCalendar {
 			return null;
 		}
 	}
+	
 }
+		
+		
+		
+	
+		
+		
+		
+		
+
+
